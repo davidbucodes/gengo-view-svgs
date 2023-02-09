@@ -1,0 +1,16 @@
+{
+  "name": "@gengo-view/kanji-svgs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node bundleSvgs",
+    "link-dependencies": "npm link @gengo-view/database @gengo-view/indices"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "svgo": "^3.0.2",
+    "ts-node": "^10.9.1"
+  }
+}
