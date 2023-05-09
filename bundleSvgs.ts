@@ -1,7 +1,7 @@
-import { IIndex, Index, KanjiDocument } from "@gengo-view/database";
+import { IIndex, Index, KanjiDocument } from "@davidbucodes/gengo-view-database";
 import * as fs from "fs";
 import { optimize } from "svgo";
-import kanjiIndexRaw from "./node_modules/@gengo-view/indices/kanji.index.json";
+import kanjiIndexRaw from "./node_modules/@davidbucodes/gengo-view-indices/kanji.index.json";
 
 export function bundle() {
   const kanjiIndex = Index.from(kanjiIndexRaw as IIndex<KanjiDocument>);

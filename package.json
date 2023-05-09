@@ -1,5 +1,5 @@
 {
-  "name": "@gengo-view/kanji-svgs",
+  "name": "@davidbucodes/gengo-view-kanji-svgs",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,11 +8,13 @@
     "build": "webpack",
     "link": " cd dist && npm link && cd ..",
     "start": "webpack --watch",
-    "link-dependencies": "npm link @gengo-view/database @gengo-view/indices"
+    "link-dependencies": "npm link @davidbucodes/gengo-view-database @davidbucodes/gengo-view-indices"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@davidbucodes/gengo-view-database": "^1.0.0",
+    "@davidbucodes/gengo-view-indices": "^1.0.0",
     "svgo": "^3.0.2"
   },
   "devDependencies": {
