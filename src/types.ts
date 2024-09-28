@@ -1,1 +1,1 @@
-export type SvgByKanjiDictionary = Record<string, string>;
+export type SvgByLetterDictionary = Record<string, string>;

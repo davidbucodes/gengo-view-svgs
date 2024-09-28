@@ -1,2 +1,2 @@
-export * from "./svgByKanji";
+export * from "./svgByLetter";
 export * from "./types";

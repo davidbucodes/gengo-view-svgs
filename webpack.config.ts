@@ -2,10 +2,10 @@ import WebpackCopyPlugin from "copy-webpack-plugin";
 import * as path from "path";
 import { Configuration } from "webpack";
 
-import { bundle } from "./bundleSvgs";
+import { bundle } from "./bundle";
 
 console.log("Start bundling svg by kanji file...");
-const { outputFilePath, outputFileName } = bundle();
+const outputFiles = bundle();
 console.log("Completed bundling svg by kanji file");
 
 const config: Configuration = {
@@ -42,7 +42,10 @@ const config: Configuration = {
     new WebpackCopyPlugin({
       patterns: [
         { from: "./package.json", to: "./package.json" },
-        { from: outputFilePath, to: outputFileName },
+        ...outputFiles.map(({ outputFilePath, outputFileName }) => ({
+          from: outputFilePath,
+          to: outputFileName,
+        })),
       ],
     }),
   ],
