@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "bundleSvgs": "ts-node bundleSvgs",
-    "build": "webpack",
+    "bundleSvgs": "ts-node bundle",
+    "build": "set NODE_OPTIONS=--max-old-space-size=8192 && webpack",
     "link": " cd dist && npm link && cd ..",
     "start": "webpack --watch",
     "link-dependencies": "npm link @davidbucodes/gengo-view-database @davidbucodes/gengo-view-indices"
@@ -15,9 +15,11 @@
   "dependencies": {
     "@davidbucodes/gengo-view-database": "^1.0.5",
     "@davidbucodes/gengo-view-indices": "^1.0.2",
+    "jsdom": "^26.1.0",
     "svgo": "^3.0.2"
   },
   "devDependencies": {
+    "@types/jsdom": "^21.1.7",
     "@types/webpack": "^5.28.0",
     "@types/webpack-bundle-analyzer": "^4.6.0",
     "copy-webpack-plugin": "^11.0.0",

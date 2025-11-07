@@ -4,9 +4,9 @@ import { Configuration } from "webpack";
 
 import { bundle } from "./bundle";
 
-console.log("Start bundling svg by kanji file...");
-const outputFiles = bundle();
-console.log("Completed bundling svg by kanji file");
+// console.log("Start bundling svg by kanji file...");
+// const outputFiles = bundle();
+// console.log("Completed bundling svg by kanji file");
 
 const config: Configuration = {
   mode: "development",
@@ -39,15 +39,15 @@ const config: Configuration = {
     maxAssetSize: 512000,
   },
   plugins: [
-    new WebpackCopyPlugin({
-      patterns: [
-        { from: "./package.json", to: "./package.json" },
-        ...outputFiles.map(({ outputFilePath, outputFileName }) => ({
-          from: outputFilePath,
-          to: outputFileName,
-        })),
-      ],
-    }),
+    // new WebpackCopyPlugin({
+    //   patterns: [
+    //     { from: "./package.json", to: "./package.json" },
+    //     ...outputFiles.map(({ outputFilePath, outputFileName }) => ({
+    //       from: outputFilePath,
+    //       to: outputFileName,
+    //     })),
+    //   ],
+    // }),
   ],
 };
 

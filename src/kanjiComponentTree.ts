@@ -1,18 +1,18 @@
-import { SvgByLetterDictionary } from "./types";
+import { KanjiComponentTreeDict, SvgByLetterDictionary } from "./types";
 
-export class KanjiComponentTreeNode {
-  constructor(
-    private _component: string,
-    private _childComponents: KanjiComponentTreeNode[] = null
-  ) {}
+export class KanjiComponentTree {
+  private static kanjiComponentTreeDict: KanjiComponentTreeDict = {};
 
-  get component() {
-    return this._component;
+  static async load(url: string) {
+    return new Promise<void>(async (res) => {
+      this.kanjiComponentTreeDict = (await (
+        await fetch(url)
+      ).json()) as KanjiComponentTreeDict;
+      return res();
+    });
   }
 
-  get childComponents() {
-    return this._childComponents;
+  static get(kanji: string) {
+    return this.kanjiComponentTreeDict[kanji];
   }
 }
-
-export class KanjiComponentTree extends KanjiComponentTreeNode {}

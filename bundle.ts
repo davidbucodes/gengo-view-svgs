@@ -6,9 +6,15 @@ import {
 import * as fs from "fs";
 import { optimize } from "svgo";
 import kanjiIndexRaw from "./node_modules/@davidbucodes/gengo-view-indices/kanji.index.json";
+import { JSDOM } from "jsdom";
+import {
+  KanjiComponentTreeDict,
+  KanjiComponentTreeNode,
+  SvgByLetterDictionary,
+} from "./src";
 
-const hiragana = `あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんぁぃぅぇぉっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ`;
-const katakana = `アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンァィゥェォッャュョガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポー`;
+const hiragana = `あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんぁぃぅぇぉっゃゅょがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゝ`;
+const katakana = `アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンァィゥェォッャュョガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポーヽヾ`;
 
 export function bundle() {
   const kanjiIndex = Index.from(kanjiIndexRaw as IIndex<KanjiDocument>);
@@ -16,17 +22,15 @@ export function bundle() {
   const allKanjis = kanjiIndex.documents.map((doc) => doc.kanji);
   const kanjisAndLetters = [...allKanjis, ...hiragana, ...katakana];
 
-  const svgByLetter: Record<string, string> = getSvgByLetter(kanjisAndLetters);
-
-  const kanjiComponentsTreeByKanji: Record<string, string> =
-    getKanjiComponentsTreeByKanji(kanjisAndLetters);
+  const { svgByLetter, kanjiComponentsTreeByKanji } =
+    getSvgByLetter(kanjisAndLetters);
 
   const outputFolderPath = "./output";
   if (!fs.existsSync(outputFolderPath)) {
     fs.mkdirSync(outputFolderPath);
   }
-  const outputs: [string, Record<string, string>][] = [
-    ["svgByLetter.json", svgByLetter],
+  const outputs: [string, unknown][] = [
+    // ["svgByLetter.json", svgByLetter],
     ["kanjiComponentsTreeByKanji.json", kanjiComponentsTreeByKanji],
   ];
 
@@ -44,32 +48,33 @@ export function bundle() {
   });
 }
 
+// Credit: https://github.com/pritulaziah/kanji-react-icons/blob/53c355afecebb45d0d685198cb86c77cea8e0c09/scripts/utils.ts#L4
+const replaceKVGAttrs = (str: string) => {
+  const kvgAttrs = [
+    "type",
+    "element",
+    "variant",
+    "partial",
+    "original",
+    "number",
+    "tradForm",
+    "radicalForm",
+    "position",
+    "radical",
+    "part",
+    "phon",
+  ];
+
+  for (const kvgAttr of kvgAttrs) {
+    str = str.replace(new RegExp(`kvg:${kvgAttr}="[^"]*"`, "g"), "");
+  }
+
+  return str;
+};
+
 function getSvgByLetter(kanjisAndLetters: string[]) {
-  const svgByLetter: Record<string, string> = {};
-
-  // Credit: https://github.com/pritulaziah/kanji-react-icons/blob/53c355afecebb45d0d685198cb86c77cea8e0c09/scripts/utils.ts#L4
-  const replaceKVGAttrs = (str: string) => {
-    const kvgAttrs = [
-      "type",
-      "element",
-      "variant",
-      "partial",
-      "original",
-      "number",
-      "tradForm",
-      "radicalForm",
-      "position",
-      "radical",
-      "part",
-      "phon",
-    ];
-
-    for (const kvgAttr of kvgAttrs) {
-      str = str.replace(new RegExp(`kvg:${kvgAttr}="[^"]*"`, "g"), "");
-    }
-
-    return str;
-  };
+  const svgByLetter: SvgByLetterDictionary = {};
+  const kanjiComponentsTreeByKanji: KanjiComponentTreeDict = {};
 
   for (const kanji of kanjisAndLetters) {
     const path = `./assets/kanjiSvgs/${kanji
@@ -78,50 +83,38 @@ function getSvgByLetter(kanjisAndLetters: string[]) {
       .padStart(5, "0")}.svg`;
     if (fs.existsSync(path)) {
       const svg = fs.readFileSync(path, { encoding: "utf8" });
-      const { data: optimizedSvg } = optimize(replaceKVGAttrs(svg));
-      svgByLetter[kanji] = optimizedSvg;
+      const parsed = new JSDOM(svg).window.document;
+      const parentElement = parsed.querySelector("[kvg:element]");
+      kanjiComponentsTreeByKanji[kanji] = getTree(parentElement);
+
+      // const { data: optimizedSvg } = optimize(replaceKVGAttrs(svg));
+      // svgByLetter[kanji] = optimizedSvg;
     }
   }
-  return svgByLetter;
+  return { svgByLetter, kanjiComponentsTreeByKanji };
 }
 
-function getKanjiComponentsTreeByKanji(kanjisAndLetters: string[]) {
-  const svgByLetter: Record<string, string> = {};
+function getTree(element: Element): KanjiComponentTreeNode {
+  const component = element.getAttribute("kvg:element");
+  if (element.children.length === 0) {
+    return {
+      component,
+    };
+  }
 
-  // Credit: https://github.com/pritulaziah/kanji-react-icons/blob/53c355afecebb45d0d685198cb86c77cea8e0c09/scripts/utils.ts#L4
-  const replaceKVGAttrs = (str: string) => {
-    const kvgAttrs = [
-      "type",
-      "element",
-      "variant",
-      "partial",
-      "original",
-      "number",
-      "tradForm",
-      "radicalForm",
-      "position",
-      "radical",
-      "part",
-      "phon",
-    ];
+  const relevantChildElements = [...element.children].filter((el) =>
+    el.hasAttribute("kvg:element")
+  );
+  if (relevantChildElements.length === 0) {
+    return {
+      component,
+    };
+  }
 
-    for (const kvgAttr of kvgAttrs) {
-      str = str.replace(new RegExp(`kvg:${kvgAttr}="[^"]*"`, "g"), "");
-    }
-
-    return str;
+  return {
+    component,
+    childNodes: relevantChildElements.map((el) => getTree(el)),
   };
-
-  for (const kanji of kanjisAndLetters) {
-    const path = `./assets/kanjiSvgs/${kanji
-      .charCodeAt(0)
-      .toString(16)
-      .padStart(5, "0")}.svg`;
-    if (fs.existsSync(path)) {
-      const svg = fs.readFileSync(path, { encoding: "utf8" });
-      const { data: optimizedSvg } = optimize(replaceKVGAttrs(svg));
-      svgByLetter[kanji] = optimizedSvg;
-    }
-  }
-  return svgByLetter;
 }
+
+bundle();

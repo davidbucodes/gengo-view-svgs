@@ -12,6 +12,13 @@
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
       "sourceMaps": true,
       "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Debug",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "args": ["${workspaceFolder}/bundle.ts"]
     }
   ]
 }
