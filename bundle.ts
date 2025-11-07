@@ -30,7 +30,7 @@ export function bundle() {
     fs.mkdirSync(outputFolderPath);
   }
   const outputs: [string, unknown][] = [
-    // ["svgByLetter.json", svgByLetter],
+    ["svgByLetter.json", svgByLetter],
     ["kanjiComponentsTreeByKanji.json", kanjiComponentsTreeByKanji],
   ];
 

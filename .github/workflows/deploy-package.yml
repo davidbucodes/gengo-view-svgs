@@ -25,6 +25,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm run build
       - run: cp .npmrc ./dist/.npmrc
+      - run: cp package.json ./dist/package.json
+      - run: cp ./output/kanjiComponentsTreeByKanji.json ./dist/kanjiComponentsTreeByKanji.json
+      - run: cp ./output/svgByLetter.json ./dist/svgByLetter.json
       - run: npm publish
         working-directory: dist
         env:

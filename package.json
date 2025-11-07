@@ -1,10 +1,10 @@
 {
   "name": "@davidbucodes/gengo-view-svgs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "bundleSvgs": "ts-node bundle",
+    "bundleSvgs": "set NODE_OPTIONS=--max-old-space-size=8192 && ts-node bundle",
     "build": "set NODE_OPTIONS=--max-old-space-size=8192 && webpack",
     "link": " cd dist && npm link && cd ..",
     "start": "webpack --watch",
